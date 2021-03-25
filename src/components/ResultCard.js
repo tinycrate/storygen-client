@@ -55,7 +55,15 @@ const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditTe
                 multiline
             />;
             cardActions = <CardActions>
-                <Button size="small" color="primary" onClick={onEditConfirm}><b>Confirm</b></Button>
+                {/* Only disable confirm button when there is no prompt and no generatedText */}
+                <Button
+                    disabled={(!prompt || !prompt.trim()) && (!editText || !editText.trim())}
+                    size="small"
+                    color="primary"
+                    onClick={onEditConfirm}
+                >
+                    <b>Confirm</b>
+                </Button>
                 <Button size="small" color="primary" onClick={onCancelEditClicked}><b>Cancel</b></Button>
             </CardActions>;
             break;

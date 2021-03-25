@@ -17,7 +17,7 @@ class Task {
     static tasks = {};
 
     static get_new_id() {
-        return `T${Task.tasksCreated++}`
+        return `T${++Task.tasksCreated}`
     }
 
     static new_continuation_task(modelName, prefix, model_params) {
@@ -52,7 +52,7 @@ class Sampler {
     static samplers = {};
 
     static get_new_id() {
-        return `#${Sampler.samplersCreated++}`
+        return `#${++Sampler.samplersCreated}`
     }
 
     static create_sampler(belonging_task) {

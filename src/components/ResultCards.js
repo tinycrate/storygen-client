@@ -6,7 +6,7 @@ import {GenerationType, SamplerState} from "../Constants";
 
 const useStyles = makeStyles({});
 
-const ResultCards = ({socket, samplers, onSamplerChanged}) => {
+const ResultCards = ({samplers, onSamplerChanged, onStartGenerate}) => {
     // eslint-disable-next-line no-unused-vars
     const classes = useStyles();
     const [editModeSamplers, setEditModeSamplers] = useState(new Set());
@@ -28,20 +28,7 @@ const ResultCards = ({socket, samplers, onSamplerChanged}) => {
     };
 
     const onGenerate = (samplerName) => {
-        let sampler = samplers[samplerName];
-        if (sampler.state !== SamplerState.stopped) {
-            console.log(`WARN: Sampler ${samplerName} is in not in stopped state (${sampler.state}). Generate command ignored.`)
-            return
-        }
-        sampler.state = SamplerState.waiting;
-        socket.emit(
-            'start_new_sampler',
-            samplerName,
-            sampler.belongingTask.modelName,
-            sampler.belongingTask.prefix + sampler.generatedText,
-            sampler.belongingTask.modelParams
-        );
-        onSamplerChanged();
+        onStartGenerate(samplerName);
     };
 
     const onStopGenerate = (samplerName) => {

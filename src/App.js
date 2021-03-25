@@ -146,11 +146,14 @@ function App() {
         setSamplers({...Sampler.samplers});
     };
 
-    const onParametersChanged = useCallback((modelName, parameters, initialMinLength, initialMaxLength) => {
+    const onParametersChanged = useCallback(
+        (modelName, parameters, initialMinLength, initialMaxLength, generateSequenceCount) => {
         setModelName(modelName);
-        setParameters({...parameters});
+        // Caller should create a new object if parameters are meant to be changed
+        setParameters(parameters);
         setInitialMinLength(initialMinLength);
         setInitialMaxLength(initialMaxLength);
+        setGenerateSequenceCount(generateSequenceCount);
     }, []);
 
     const onSamplerChanged = () => {
@@ -177,6 +180,24 @@ function App() {
             generateSequenceCount
         )
     };
+
+    const onStartGenerate = (samplerName) => {
+        let sampler = Sampler.samplers[samplerName];
+        if (sampler.state !== SamplerState.stopped) {
+            console.log(`WARN: Sampler ${samplerName} is in not in stopped state (${sampler.state}). Generate command ignored.`)
+            return
+        }
+        sampler.state = SamplerState.waiting;
+        socket.emit(
+            'start_new_sampler',
+            samplerName,
+            sampler.belongingTask.modelName,
+            sampler.belongingTask.prefix + sampler.generatedText,
+            {...sampler.belongingTask.modelParams, 'min_length': initialMinLength}
+        );
+        setSamplers({...Sampler.samplers});
+    };
+
     useEffect(() => {
         // componentDidMount
         let socket = io("127.0.0.1:5000");
@@ -191,12 +212,21 @@ function App() {
     }, []);
 
     useEffect(() => {
-       console.log("[INFO] Selected model:", modelName);
+        console.log("[INFO] Selected model:", modelName);
     }, [modelName]);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log("[INFO] Parameters selected: ", parameters);
     }, [parameters]);
+
+    useEffect(()=>{
+        console.log(
+            "[INFO] Generate options changed: Type:", generationType,
+            "MinLength:", initialMinLength,
+            "MaxLength:", initialMaxLength,
+            "SequenceCount:", generateSequenceCount
+        )
+    }, [generationType, initialMinLength, initialMaxLength, generateSequenceCount]);
 
     const classes = useStyles();
     return (
@@ -219,9 +249,9 @@ function App() {
                     </Grid>
                     <Grid item xs>
                         <ResultCards
-                            socket={socket}
                             samplers={samplers}
                             onSamplerChanged={onSamplerChanged}
+                            onStartGenerate={onStartGenerate}
                         />
                     </Grid>
                 </Grid>

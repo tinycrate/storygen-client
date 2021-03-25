@@ -6,6 +6,6 @@ export const SamplerState = {
 };
 
 export const GenerationType = {
-    continuation: 0,
-    prompt: 1
+    continuation: 'continuation',
+    prompt: 'prompt'
 };

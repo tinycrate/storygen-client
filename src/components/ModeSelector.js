@@ -5,10 +5,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import {GenerationType} from "../Constants";
 
-const TabModes = {
-    0: GenerationType.continuation,
-    1: GenerationType.prompt
-};
+const TabModes = [GenerationType.continuation, GenerationType.prompt];
 
 const ModeSelector = ({mode, onModeChanged}) => {
 
@@ -19,7 +16,7 @@ const ModeSelector = ({mode, onModeChanged}) => {
     return (
         <Paper square>
             <Tabs
-                value={mode}
+                value={TabModes.indexOf(mode)}
                 indicatorColor="primary"
                 textColor="primary"
                 variant="fullWidth"

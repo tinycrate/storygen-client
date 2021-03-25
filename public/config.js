@@ -5,6 +5,6 @@ var ModelConfig = {
         "GPT2-small (0 shot)" : "gpt2"
     },
     promptModels : {
-        "Reddit Word Prompt" : "model_word_prompt",
+        "Reddit Writing Prompt" : "model_word_prompt",
     }
 };

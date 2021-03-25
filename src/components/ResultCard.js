@@ -14,6 +14,9 @@ const useStyles = makeStyles({
     textField: {
         width: "100%"
     },
+    textRenderArea: {
+        whiteSpace: "pre-wrap"
+    },
 });
 
 const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditText, onGenerate, onStopGenerate}) => {
@@ -23,6 +26,7 @@ const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditTe
     let textRenderArea, cardActions;
 
     const onEditClicked = () => {
+        setEditText(text);
         onEditModeChange(samplerName, true);
     };
 
@@ -68,27 +72,43 @@ const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditTe
             </CardActions>;
             break;
         case 'idle':
-            textRenderArea = <Typography variant="body1" align="left">{text}</Typography>;
+            textRenderArea = <Typography
+                className={classes.textRenderArea}
+                variant="body1"
+                align="left"
+            >{text}</Typography>;
             cardActions = <CardActions>
                 <Button size="small" color="primary" onClick={onGenerateClick}><b>Generate More</b></Button>
                 <Button size="small" color="primary" onClick={onEditClicked}><b>Edit</b></Button>
             </CardActions>;
             break;
         case 'waiting':
-            textRenderArea = <Typography variant="body1" align="left">{text}</Typography>;
+            textRenderArea = <Typography
+                className={classes.textRenderArea}
+                variant="body1"
+                align="left"
+            >{text}</Typography>;
             cardActions = <CardActions>
                 <Button disabled size="small" color="primary"><b>Generate More</b></Button>
                 <CircularProgress size={20}/>
             </CardActions>;
             break;
         case 'running':
-            textRenderArea = <Typography variant="body1" align="left">{text}</Typography>;
+            textRenderArea = <Typography
+                className={classes.textRenderArea}
+                variant="body1"
+                align="left"
+            >{text}</Typography>;
             cardActions = <CardActions>
                 <Button size="small" color="secondary" onClick={onStopGenerateClick}><b>Stop Generation</b></Button>
             </CardActions>;
             break;
         case 'stopwait':
-            textRenderArea = <Typography variant="body1" align="left">{text}</Typography>;
+            textRenderArea = <Typography
+                className={classes.textRenderArea}
+                variant="body1"
+                align="left"
+            >{text}</Typography>;
             cardActions = <CardActions>
                 <Button disabled size="small" color="secondary"><b>Stop Generation</b></Button>
                 <CircularProgress size={20}/>

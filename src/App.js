@@ -148,26 +148,25 @@ function App() {
 
     const onParametersChanged = useCallback(
         (modelName, parameters, initialMinLength, initialMaxLength, generateSequenceCount) => {
-        setModelName(modelName);
-        // Caller should create a new object if parameters are meant to be changed
-        setParameters(parameters);
-        setInitialMinLength(initialMinLength);
-        setInitialMaxLength(initialMaxLength);
-        setGenerateSequenceCount(generateSequenceCount);
-    }, []);
+            setModelName(modelName);
+            // Caller should create a new object if parameters are meant to be changed
+            setParameters(parameters);
+            setInitialMinLength(initialMinLength);
+            setInitialMaxLength(initialMaxLength);
+            setGenerateSequenceCount(generateSequenceCount);
+        }, []);
 
     const onSamplerChanged = () => {
         setSamplers({...Sampler.samplers});
     };
 
-    const onTextSubmit = (text) => {
+    const onTextSubmit = (text, promptTag) => {
         let task;
         if (generationType === GenerationType.continuation) {
             task = Task.new_continuation_task(modelName, text, parameters);
         } else if (generationType === GenerationType.prompt) {
-            // TODO: Remove following line
-            task = Task.new_continuation_task(modelName, text, parameters);
-            // TODO: Add support for prompt generation type
+            let prompt = promptTag + text;
+            task = Task.new_prompt_task(modelName, prompt, `${prompt} [RESPONSE] `, parameters);
         }
         setWaitingTask(task.id);
         socket.emit(
@@ -219,7 +218,7 @@ function App() {
         console.log("[INFO] Parameters selected: ", parameters);
     }, [parameters]);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(
             "[INFO] Generate options changed: Type:", generationType,
             "MinLength:", initialMinLength,
@@ -236,7 +235,13 @@ function App() {
                 <ModeSelector mode={generationType} onModeChanged={(newMode) => setGenerationType(newMode)}/>
             </Container>
             <Container>
-                <Box p={2}><TextInput wait={socket == null || waitingTask != null} onTextSubmit={onTextSubmit}/></Box>
+                <Box p={2}>
+                    <TextInput
+                        wait={socket == null || waitingTask != null}
+                        generationType={generationType}
+                        onTextSubmit={onTextSubmit}
+                    />
+                </Box>
             </Container>
             <Container>
                 <Grid container spacing={2} className={classes.grid}>

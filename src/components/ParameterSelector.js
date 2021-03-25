@@ -9,7 +9,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import {GenerationType} from "../Constants";
 import Slider from "@material-ui/core/Slider";
-import Input from "@material-ui/core/Input";
 import SliderInput from "./SliderInput";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,7 +20,10 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(1)
     },
     selectorControl: {
-        width: "100%"
+        width: "100%",
+    },
+    captions: {
+        maxWidth: 200
     }
 }));
 
@@ -49,7 +51,6 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
     const [initialMaxLength, setInitialMaxLength] = useState(20);
     const [initialMinLength, setInitialMinLength] = useState(10);
     const [generateSequenceCount, setGenerateSequenceCount] = useState(5);
-    const [topPInputField, setTopPInputField] = useState(1.0);
 
     const onModelChange = (event) => {
         setModel(event.target.value);
@@ -76,8 +77,8 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                     <Typography variant="h5" component="h2" align="left">
                         Parameters
                     </Typography>
-                    <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                gutterBottom>
+                    <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                className={classes.captions} gutterBottom>
                         Apply only to new stories
                     </Typography>
                     <Grid container spacing={2} direction="column" alignItems="stretch" className={classes.root}>
@@ -106,13 +107,42 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                         </Grid>
                         <Grid item>
                             <Typography variant="body2" align="left">
+                                Temperature:
+                            </Typography>
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
+                                The probability distribution is multiplied by the inverse of this value before sampling.
+                                Lowering the value produces more coherent results.
+                                Increasing the value reduces repetition.
+                            </Typography>
+                            <SliderInput
+                                min={0.5}
+                                max={1.5}
+                                initial={1}
+                                step={0.01}
+                                onChangesCommitted={(value)=>{
+                                    setParams({...params, 'temperature':value})
+                                }}
+                                onValidateInput={(value)=>{
+                                    if (value < 0.001) {
+                                        return 0.01
+                                    } else if (value >= 3) {
+                                        return 3
+                                    } else {
+                                        return value
+                                    }
+                                }}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="body2" align="left">
                                 Top-p Sampling:
                             </Typography>
-                            <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                        gutterBottom>
-                                Nucleus sampling, select the <br/>
-                                least amount of tokens that <br/>
-                                combines to a probability of p. <br/>
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
+                                Nucleus sampling, select the
+                                least amount of tokens that
+                                combines to a probability of p.
                                 Set 1 to disable top p sampling.
                             </Typography>
                             <SliderInput
@@ -138,11 +168,11 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <Typography variant="body2" align="left">
                                 Top-k Sampling:
                             </Typography>
-                            <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                        gutterBottom>
-                                Select at most k tokens only <br/>
-                                Set 1 for greedy sampling. <br/>
-                                Set 0 to disable top k sampling <br/>
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
+                                Select at most k tokens only
+                                Set 1 for greedy sampling.
+                                Set 0 to disable top k sampling
                                 which selects unlimited tokens.
                             </Typography>
                             <SliderInput
@@ -176,8 +206,8 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <Typography variant="body2" align="left">
                                 Stories to Generate:
                             </Typography>
-                            <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                        gutterBottom>
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
                                 Each time you click "Generate"
                             </Typography>
                             <div className={classes.slider}>
@@ -198,8 +228,8 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <Typography variant="body2" align="left">
                                 Minimum Length:
                             </Typography>
-                            <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                        gutterBottom>
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
                                 Generate at least {initialMinLength} tokens long
                             </Typography>
                             <div className={classes.slider}>
@@ -219,9 +249,9 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <Typography variant="body2" align="left">
                                 Pausing Length:
                             </Typography>
-                            <Typography variant="caption" display="block" align="left" color={"textSecondary"}
-                                        gutterBottom>
-                                Generate at most {initialMaxLength} tokens <br/> before requiring "Generate More"
+                            <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
+                                        className={classes.captions} gutterBottom>
+                                Generate at most {initialMaxLength} tokens   before requiring "Generate More"
                             </Typography>
                             <div className={classes.slider}>
                                 <Slider

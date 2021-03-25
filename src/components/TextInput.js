@@ -7,6 +7,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import {GenerationType} from "../Constants";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,13 +36,18 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const TextInput = ({wait, onTextSubmit}) => {
+const TextInput = ({wait, generationType, onTextSubmit}) => {
     const classes = useStyles();
     const [value, setValue] = useState("");
+    const [promptTag, setPromptTag] = useState("[WP] ");
 
     const onSubmit = () => {
         if (value.trim()) {
-            onTextSubmit(value);
+            if (generationType === GenerationType.prompt) {
+                onTextSubmit(value, promptTag);
+            } else {
+                onTextSubmit(value, "");
+            }
         }
     };
 

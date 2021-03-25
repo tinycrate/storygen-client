@@ -54,10 +54,11 @@ const ResultCards = ({samplers, onSamplerChanged, onStartGenerate}) => {
             mode = sampler.state;
         }
         let prompt = "";
-        if (sampler.belongingTask.generationType === GenerationType.continuation) {
+        if (sampler.belongingTask.generationType === GenerationType.prompt) {
             prompt = sampler.belongingTask.originalPrompt;
         }
         let text = sampler.generatedText;
+        let params = sampler.belongingTask.modelParams;
         return (
             <Grid key={samplerName} item>
                 <ResultCard
@@ -65,6 +66,7 @@ const ResultCards = ({samplers, onSamplerChanged, onStartGenerate}) => {
                     mode={mode}
                     prompt={prompt}
                     text={text}
+                    params={params}
                     onEditModeChange={onEditModeChange}
                     onEditText={onEditText}
                     onGenerate={onGenerate}

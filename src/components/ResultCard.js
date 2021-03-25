@@ -9,17 +9,19 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {GenerationType} from "../Constants";
 
 const useStyles = makeStyles({
     textField: {
         width: "100%"
     },
     textRenderArea: {
-        whiteSpace: "pre-wrap"
+        whiteSpace: "pre-line",
+        wordBreak: "break-word"
     },
 });
 
-const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditText, onGenerate, onStopGenerate}) => {
+const ResultCard = ({samplerName, mode, prompt, text, params, onEditModeChange, onEditText, onGenerate, onStopGenerate}) => {
     const classes = useStyles();
     const [editText, setEditText] = useState(text);
 
@@ -120,9 +122,18 @@ const ResultCard = ({samplerName, mode, prompt, text, onEditModeChange, onEditTe
     return (
         <Card>
             <CardContent>
-                <Typography variant="body2" align="left" color="textSecondary">
-                    Story {samplerName}: {prompt}
+                <Typography variant="body2" align="right" color="textSecondary">
+                    {Object.keys(params).map(k => `${k}=${params[k]}`).join(", ")}
                 </Typography>
+                <Typography variant="body2" align="left" color="textSecondary">
+                    Story {samplerName}:
+                </Typography>
+                {
+                    (prompt) &&
+                    <Typography variant="body2" align="left" color="textSecondary">
+                        {prompt}
+                    </Typography>
+                }
                 {textRenderArea}
             </CardContent>
             <Divider orientation={'horizontal'}/>

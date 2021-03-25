@@ -7,6 +7,7 @@ import {GenerationType, SamplerState} from "../Constants";
 const useStyles = makeStyles({});
 
 const ResultCards = ({socket, samplers, onSamplerChanged}) => {
+    // eslint-disable-next-line no-unused-vars
     const classes = useStyles();
     const [editModeSamplers, setEditModeSamplers] = useState(new Set());
 

@@ -2,7 +2,7 @@ import './App.css';
 import ModeSelector from './components/ModeSelector'
 import TextInput from "./components/TextInput";
 import {makeStyles} from "@material-ui/core";
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import {io} from "socket.io-client"
 import Box from '@material-ui/core/Box';
 import Container from "@material-ui/core/Container";
@@ -93,7 +93,7 @@ function App() {
             let sampler = Sampler.create_sampler(task);
             if (results.hasOwnProperty(result)) {
                 sampler.generatedText = results[result];
-                // We add the prefix to the generation for continuation task as it is the part of the story
+                // We add the prefix to generatedText for continuation task as it is the part of the story
                 if (task.generationType === GenerationType.continuation) {
                     sampler.generatedText = task.prefix + sampler.generatedText;
                 }
@@ -135,20 +135,23 @@ function App() {
     };
 
     const onDisconnect = (reason) => {
-        console.log(`Disconnected from server: ${reason}. Cleaning up...`);
+        console.log(`[NET] Disconnected from server: ${reason}. Cleaning up...`);
         for (let sampler_name in Sampler.samplers) {
             if (Sampler.samplers.hasOwnProperty(sampler_name)) {
                 Sampler.samplers[sampler_name].state = SamplerState.stopped;
             }
         }
         setWaitingTask(null);
+        setSocket(null);
         setSamplers({...Sampler.samplers});
     };
 
-    const onParameterChanged = (modelName, parameters) => {
+    const onParametersChanged = useCallback((modelName, parameters, initialMinLength, initialMaxLength) => {
         setModelName(modelName);
-        setParameters(...parameters);
-    };
+        setParameters({...parameters});
+        setInitialMinLength(initialMinLength);
+        setInitialMaxLength(initialMaxLength);
+    }, []);
 
     const onSamplerChanged = () => {
         setSamplers({...Sampler.samplers});
@@ -174,7 +177,6 @@ function App() {
             generateSequenceCount
         )
     };
-
     useEffect(() => {
         // componentDidMount
         let socket = io("127.0.0.1:5000");
@@ -183,23 +185,38 @@ function App() {
         socket.on("on_text_sample_completed", onTextSampleCompleted);
         socket.on("disconnect", onDisconnect);
         socket.on("connect", () => {
-            console.log(`Connected to server.`)
+            console.log(`[NET] Connected to server.`);
             setSocket(socket);
         });
     }, []);
+
+    useEffect(() => {
+       console.log("[INFO] Selected model:", modelName);
+    }, [modelName]);
+
+    useEffect(()=>{
+        console.log("[INFO] Parameters selected: ", parameters);
+    }, [parameters]);
+
     const classes = useStyles();
     return (
         <div className="App">
             <h1> Creative Story Generator Using GPT-2 </h1>
             <Container maxWidth="xs">
-                <ModeSelector/>
+                <ModeSelector mode={generationType} onModeChanged={(newMode) => setGenerationType(newMode)}/>
             </Container>
             <Container>
                 <Box p={2}><TextInput wait={socket == null || waitingTask != null} onTextSubmit={onTextSubmit}/></Box>
             </Container>
             <Container>
                 <Grid container spacing={2} className={classes.grid}>
-                    <Grid item><ParameterSelector onParameterChanged={onParameterChanged}/></Grid>
+                    <Grid item>
+                        <ParameterSelector
+                            generationType={generationType}
+                            parameters={parameters}
+                            onParameterChanged={onParametersChanged}
+                        />
+                    </Grid>
                     <Grid item xs>
                         <ResultCards
                             socket={socket}

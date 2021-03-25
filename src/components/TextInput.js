@@ -33,7 +33,7 @@ const TextInput = ({wait, onTextSubmit}) => {
     const [value, setValue] = useState("");
 
     const onSubmit = () => {
-        if (value) {
+        if (value.trim()) {
             onTextSubmit(value);
         }
     };

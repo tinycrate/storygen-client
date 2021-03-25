@@ -1,16 +1,19 @@
-import {useState} from 'react'
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Container from "@material-ui/core/Container";
 import CreateIcon from '@material-ui/icons/Create';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import {GenerationType} from "../Constants";
 
-const ModeSelector = () => {
-    const [mode, setMode] = useState(0);
+const TabModes = {
+    0: GenerationType.continuation,
+    1: GenerationType.prompt
+};
+
+const ModeSelector = ({mode, onModeChanged}) => {
 
     const onModeChange = (event, newMode) => {
-        setMode(newMode);
+        onModeChanged(TabModes[newMode]);
     };
 
     return (

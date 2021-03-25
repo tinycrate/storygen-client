@@ -69,14 +69,14 @@ class Sampler {
     }
 }
 
-function App() {
-    const useStyles = makeStyles((theme) => ({
-        grid: {
-            paddingLeft: theme.spacing(4),
-            paddingRight: theme.spacing(4)
-        }
-    }));
+const useStyles = makeStyles((theme) => ({
+    grid: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2)
+    }
+}));
 
+function App() {
     const [socket, setSocket] = useState(null);
     const [samplers, setSamplers] = useState({});
     const [waitingTask, setWaitingTask] = useState(null);
@@ -197,16 +197,18 @@ function App() {
             <Container>
                 <Box p={2}><TextInput wait={socket == null || waitingTask != null} onTextSubmit={onTextSubmit}/></Box>
             </Container>
-            <Grid container spacing={2} className={classes.grid}>
-                <Grid item><ParameterSelector onParameterChanged={onParameterChanged}/></Grid>
-                <Grid item xs>
-                    <ResultCards
-                        socket={socket}
-                        samplers={samplers}
-                        onSamplerChanged={onSamplerChanged}
-                    />
+            <Container>
+                <Grid container spacing={2} className={classes.grid}>
+                    <Grid item><ParameterSelector onParameterChanged={onParameterChanged}/></Grid>
+                    <Grid item xs>
+                        <ResultCards
+                            socket={socket}
+                            samplers={samplers}
+                            onSamplerChanged={onSamplerChanged}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Container>
         </div>
     );
 }

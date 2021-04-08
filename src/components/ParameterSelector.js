@@ -43,11 +43,11 @@ const generateSequenceMarks = [...Array(maxGeneratedSequences).keys()].map(x => 
     return {value: x + 1, label: (x + 1).toString()}
 });
 
-const ParameterSelector = ({generationType, parameters, onParameterChanged: onParametersChanged}) => {
+const ParameterSelector = ({generationType, parameters, onParametersChanged}) => {
     const classes = useStyles();
     const [usableModels, setUsableModels] = useState(getUsableModels(generationType));
     const [model, setModel] = useState("gpt2");
-    const [params, setParams] = useState({});
+    const [params, setParams] = useState(parameters);
     const [initialMaxLength, setInitialMaxLength] = useState(20);
     const [initialMinLength, setInitialMinLength] = useState(10);
     const [generateSequenceCount, setGenerateSequenceCount] = useState(5);
@@ -55,6 +55,11 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
     const onModelChange = (event) => {
         setModel(event.target.value);
     };
+
+    /* Triggered when parameters changes */
+    useEffect(()=> {
+        setParams(parameters);
+    }, [parameters]);
 
     /* Triggered when generationType changes */
     useEffect(() => {
@@ -118,12 +123,14 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <SliderInput
                                 min={0.5}
                                 max={1.5}
-                                initial={1}
+                                initial={
+                                    (typeof params['temperature'] !== "undefined") ? params['temperature'] : 1
+                                }
                                 step={0.01}
-                                onChangesCommitted={(value)=>{
-                                    setParams({...params, 'temperature':value})
+                                onChangesCommitted={(value) => {
+                                    setParams({...params, 'temperature': value})
                                 }}
-                                onValidateInput={(value)=>{
+                                onValidateInput={(value) => {
                                     if (value < 0.001) {
                                         return 0.01
                                     } else if (value >= 3) {
@@ -148,12 +155,12 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <SliderInput
                                 min={0.01}
                                 max={1}
-                                initial={1}
+                                initial={(typeof params['top_p'] !== "undefined") ? params['top_p'] : 1}
                                 step={0.01}
-                                onChangesCommitted={(value)=>{
-                                    setParams({...params, 'top_p':value})
+                                onChangesCommitted={(value) => {
+                                    setParams({...params, 'top_p': value})
                                 }}
-                                onValidateInput={(value)=>{
+                                onValidateInput={(value) => {
                                     if (value < 0.001) {
                                         return 0.01
                                     } else if (value >= 1) {
@@ -178,12 +185,12 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             <SliderInput
                                 min={0}
                                 max={200}
-                                initial={0}
+                                initial={(typeof params['top_k'] !== "undefined") ? params['top_k'] : 0}
                                 step={1}
-                                onChangesCommitted={(value)=>{
-                                    setParams({...params, 'top_k':value})
+                                onChangesCommitted={(value) => {
+                                    setParams({...params, 'top_k': value})
                                 }}
-                                onValidateInput={(value)=>{
+                                onValidateInput={(value) => {
                                     value = Math.round(value);
                                     if (value < 0) {
                                         return 0;
@@ -251,7 +258,7 @@ const ParameterSelector = ({generationType, parameters, onParameterChanged: onPa
                             </Typography>
                             <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
                                         className={classes.captions} gutterBottom>
-                                Generate at most {initialMaxLength} tokens   before requiring "Generate More"
+                                Generate at most {initialMaxLength} tokens before requiring "Generate More"
                             </Typography>
                             <div className={classes.slider}>
                                 <Slider

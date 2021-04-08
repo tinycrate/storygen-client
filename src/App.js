@@ -1,4 +1,3 @@
-import './App.css';
 import ModeSelector from './components/ModeSelector'
 import TextInput from "./components/TextInput";
 import {makeStyles} from "@material-ui/core";
@@ -11,6 +10,11 @@ import ParameterSelector from "./components/ParameterSelector";
 import ResultCards from "./components/ResultCards";
 import 'fontsource-roboto';
 import {GenerationType, SamplerState} from "./Constants";
+import {useSnackbar} from 'notistack';
+import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
+import Fade from "@material-ui/core/Fade";
 
 class Task {
     static tasksCreated = 0;
@@ -73,8 +77,16 @@ const useStyles = makeStyles((theme) => ({
     grid: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2)
+    },
+    initMsgBox: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        textAlign: 'left'
     }
 }));
+
+let disconnectedSnackBar = null;
 
 function App() {
     const [socket, setSocket] = useState(null);
@@ -86,6 +98,7 @@ function App() {
     const [initialMaxLength, setInitialMaxLength] = useState(20);
     const [initialMinLength, setInitialMinLength] = useState(10);
     const [generateSequenceCount, setGenerateSequenceCount] = useState(5);
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     const onGenerateCompleted = (task_name, results) => {
         let task = Task.tasks[task_name];
@@ -144,6 +157,11 @@ function App() {
         setWaitingTask(null);
         setSocket(null);
         setSamplers({...Sampler.samplers});
+        if (disconnectedSnackBar === null) {
+            disconnectedSnackBar = enqueueSnackbar(
+                "Disconnected. Reconnecting...", {variant: 'warning', autoHideDuration: null}
+            );
+        }
     };
 
     const onParametersChanged = useCallback(
@@ -166,7 +184,7 @@ function App() {
             task = Task.new_continuation_task(modelName, text, parameters);
         } else if (generationType === GenerationType.prompt) {
             let prompt = promptTag + text;
-            task = Task.new_prompt_task(modelName, prompt, `${prompt} [RESPONSE] `, parameters);
+            task = Task.new_prompt_task(modelName, prompt, `<|endoftext|>${prompt} [RESPONSE] `, parameters);
         }
         setWaitingTask(task.id);
         socket.emit(
@@ -199,7 +217,13 @@ function App() {
 
     useEffect(() => {
         // componentDidMount
-        let socket = io("127.0.0.1:5000");
+        let socket;
+        if (window.APILocation) {
+            socket = io(window.APILocation);
+        } else {
+            // If no API location specified, it defaults to the same as the web server
+            socket = io();
+        }
         socket.on("on_generate_completed", onGenerateCompleted);
         socket.on("on_text", onText);
         socket.on("on_text_sample_completed", onTextSampleCompleted);
@@ -207,7 +231,20 @@ function App() {
         socket.on("connect", () => {
             console.log(`[NET] Connected to server.`);
             setSocket(socket);
+            if (disconnectedSnackBar != null) {
+                closeSnackbar(disconnectedSnackBar);
+                disconnectedSnackBar = null;
+            }
+            enqueueSnackbar("Connected!", {variant: 'success'});
         });
+        if (disconnectedSnackBar === null) {
+            disconnectedSnackBar = enqueueSnackbar(
+                "Connecting to inference API...",
+                {variant: 'default', transitionDuration: {enter: 1, exit: 136}, autoHideDuration: null}
+            );
+        }
+        // We want to execute once only and we understand that all function will get stale values which is fine
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -241,15 +278,29 @@ function App() {
                         generationType={generationType}
                         onTextSubmit={onTextSubmit}
                     />
+                    {socket != null && waitingTask != null && <LinearProgress/>}
                 </Box>
             </Container>
+            {socket != null && waitingTask != null &&
+            <Fade in={socket != null && waitingTask != null}>
+                <Container>
+                    <Box className={classes.initMsgBox}>
+                        <Alert severity="success">
+                            <AlertTitle><strong>Initializing Model...</strong></AlertTitle>
+                            This could take up to 10 seconds when changing models. Subsequent generation will be
+                            significantly faster.
+                        </Alert>
+                    </Box>
+                </Container>
+            </Fade>
+            }
             <Container>
                 <Grid container spacing={2} className={classes.grid}>
                     <Grid item>
                         <ParameterSelector
                             generationType={generationType}
                             parameters={parameters}
-                            onParameterChanged={onParametersChanged}
+                            onParametersChanged={onParametersChanged}
                         />
                     </Grid>
                     <Grid item xs>
@@ -257,6 +308,13 @@ function App() {
                             samplers={samplers}
                             onSamplerChanged={onSamplerChanged}
                             onStartGenerate={onStartGenerate}
+                            onModelParametersPresetChanged={(presetName, params) => {
+                                setParameters(params);
+                                enqueueSnackbar(`Preset applied: ${presetName}`, {
+                                    variant: 'info',
+                                    preventDuplicate: true
+                                })
+                            }}
                         />
                     </Grid>
                 </Grid>

@@ -4,12 +4,12 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
-import PropTypes from 'prop-types';
+import * as PropTypes from 'prop-types'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {GenerationType} from "../Constants";
+import Slide from "@material-ui/core/Slide";
 
 const useStyles = makeStyles({
     textField: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-const ResultCard = ({samplerName, mode, prompt, text, params, onEditModeChange, onEditText, onGenerate, onStopGenerate}) => {
+const ResultCard = ({samplerName, mode, prompt, text, model, params, onEditModeChange, onEditText, onGenerate, onStopGenerate}) => {
     const classes = useStyles();
     const [editText, setEditText] = useState(text);
 
@@ -120,25 +120,27 @@ const ResultCard = ({samplerName, mode, prompt, text, params, onEditModeChange, 
             break;
     }
     return (
-        <Card>
-            <CardContent>
-                <Typography variant="body2" align="right" color="textSecondary">
-                    {Object.keys(params).map(k => `${k}=${params[k]}`).join(", ")}
-                </Typography>
-                <Typography variant="body2" align="left" color="textSecondary">
-                    Story {samplerName}:
-                </Typography>
-                {
-                    (prompt) &&
-                    <Typography variant="body2" align="left" color="textSecondary">
-                        {prompt}
+        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
+            <Card>
+                <CardContent>
+                    <Typography variant="body2" align="right" color="textSecondary">
+                        {[...Object.keys(params).map(k => `${k}=${params[k]}`), `model=${model}`].join(", ")}
                     </Typography>
-                }
-                {textRenderArea}
-            </CardContent>
-            <Divider orientation={'horizontal'}/>
-            {cardActions}
-        </Card>
+                    <Typography variant="body2" align="left" color="textSecondary">
+                        Story {samplerName}:
+                    </Typography>
+                    {
+                        (prompt) &&
+                        <Typography variant="body2" align="left" color="textSecondary">
+                            {prompt}
+                        </Typography>
+                    }
+                    {textRenderArea}
+                </CardContent>
+                <Divider orientation={'horizontal'}/>
+                {cardActions}
+            </Card>
+        </Slide>
     )
 };
 

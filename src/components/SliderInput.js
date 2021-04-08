@@ -2,7 +2,7 @@ import {makeStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
 import Input from "@material-ui/core/Input/Input";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 const useStyles = makeStyles((theme) => ({
     slider: {
@@ -17,6 +17,12 @@ const useStyles = makeStyles((theme) => ({
 const SliderInput = ({min, max, step, initial, onChangesCommitted, onValidateInput}) => {
     const classes = useStyles();
     const [value, setValue] = useState(initial);
+
+    /* When initial value changes, reset the control */
+    useEffect(()=>{
+        setValue(initial);
+    }, [initial]);
+
     return (
         <div className={classes.slider}>
             <Grid container spacing={2} direction="row" alignItems="center">

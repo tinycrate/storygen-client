@@ -3,10 +3,18 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { SnackbarProvider } from 'notistack';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{horizontal:'right', vertical: 'bottom'}}
+        transitionDuration={{ enter: 157, exit: 136 }}
+        autoHideDuration={3000}
+    >
+      <App />
+    </SnackbarProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

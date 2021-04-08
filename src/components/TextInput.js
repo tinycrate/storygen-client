@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 import CreateIcon from '@material-ui/icons/Create';
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -39,6 +40,8 @@ const useStyles = makeStyles((theme) => ({
 const TextInput = ({wait, generationType, onTextSubmit}) => {
     const classes = useStyles();
     const [value, setValue] = useState("");
+    // Low priority TODO: Support multiple promptTags
+    // eslint-disable-next-line no-unused-vars
     const [promptTag, setPromptTag] = useState("[WP] ");
 
     const onSubmit = () => {
@@ -71,7 +74,9 @@ const TextInput = ({wait, generationType, onTextSubmit}) => {
                 onClick={onSubmit}
             >
                 <Typography variant="button" className={classes.generateButtonText}><b>Generate</b></Typography>
-                {wait ? <CircularProgress className={classes.circularProgress} size={20}/> : <CreateIcon/>}
+                {wait ? <CircularProgress className={classes.circularProgress} size={20}/> : (
+                    generationType === GenerationType.prompt ? <EmojiObjectsIcon/> : <CreateIcon/>
+                )}
             </Button>
         </Paper>
     )

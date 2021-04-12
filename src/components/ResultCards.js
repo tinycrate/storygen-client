@@ -107,9 +107,9 @@ const ResultCards = ({samplers, onSamplerChanged, onStartGenerate, onModelParame
                                 <li>Select a model of your choice in the Parameters menu</li>
                                 <li>Enter some text in the textbox above</li>
                                 <li>Click <b>Generate</b></li>
-                                <li>Find a story that interests you and click "Generate More"</li>
+                                <li>Find a story that interests you and click <b>Generate More</b></li>
                                 <li>
-                                    <b>Stop</b> and <b>Resume</b> Generation or <b>Edit</b> the output before resuming.
+                                    Stop and Resume the generation or <b>Edit</b> the output before resuming.
                                 </li>
                             </ol>
                         </Typography>

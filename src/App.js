@@ -287,8 +287,13 @@ function App() {
                     <Box className={classes.initMsgBox}>
                         <Alert severity="success">
                             <AlertTitle><strong>Initializing Model...</strong></AlertTitle>
-                            This could take up to 10 seconds when changing models. Subsequent generation will be
-                            significantly faster.
+                            This could take up to 10 seconds when changing models. Subsequent generation of the same
+                            model will be significantly faster.
+                            {Task.tasks[waitingTask].modelName === "gpt2" &&
+                            <span><br/><b>
+                                You have selected the original pretrained gpt2-small model. The model needs to be
+                                downloaded. This might take some additional time.
+                            </b></span>}
                         </Alert>
                     </Box>
                 </Container>

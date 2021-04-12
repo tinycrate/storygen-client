@@ -116,9 +116,9 @@ const ParameterSelector = ({generationType, parameters, onParametersChanged}) =>
                             </Typography>
                             <Typography variant="caption" display="block" align="justify" color={"textSecondary"}
                                         className={classes.captions} gutterBottom>
-                                The probability distribution is multiplied by the inverse of this value before sampling.
-                                Lowering the value produces more coherent results.
-                                Increasing the value reduces repetition.
+                                Control the randomness of the generated text.
+                                Lowering the value produces less random and more coherent results.
+                                Increasing the value produces more random and less repetitive results.
                             </Typography>
                             <SliderInput
                                 min={0.5}

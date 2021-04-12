@@ -7,7 +7,7 @@ var ModelConfig = {
         "Fantasy"               : "model_fantasy",
         "Science Fiction"       : "model_science_fiction",
         "Children Fiction"      : "model_children_fiction",
-        "GPT2-small (0 shot)"   : "gpt2"
+        "GPT2-Small Original"   : "gpt2"
     },
     promptModels : {
         "Reddit Writing Prompt" : "model_writing_prompt",

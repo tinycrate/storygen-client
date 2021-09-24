@@ -1,16 +1,10 @@
 // noinspection ES6ConvertVarToLetConst
 var ModelConfig = {
     continuationModels : {
-        "Harry Potter"          : "model_harry_potter",
-        "Detective"             : "model_detective",
-        "Adventure"             : "model_adventure",
-        "Fantasy"               : "model_fantasy",
-        "Science Fiction"       : "model_science_fiction",
-        "Children Fiction"      : "model_children_fiction",
-        "GPT2-Small Original"   : "gpt2"
+        "GPT2-Small"   : "gpt2"
     },
     promptModels : {
-        "Reddit Writing Prompt" : "model_writing_prompt",
+        "Fallback <Replace this model>"   : "gpt2"
     }
 };
 
